@@ -1,5 +1,8 @@
 class Mailboxer::Conversation < ActiveRecord::Base
   self.table_name = :mailboxer_conversations
+  before_create :generate_token
+  has_many :messages
+  accepts_nested_attributes_for :messages
 
   attr_accessible :subject if Mailboxer.protected_attributes?
 
@@ -34,6 +37,20 @@ class Mailboxer::Conversation < ActiveRecord::Base
   }
 
   #Mark the conversation as read for one of the participants
+
+  def receivers
+    participants-[originator]
+  end
+
+  def other_users(user)
+    participants.select{|p|p.id!=user.id}
+  end
+
+  def other_user(user) #assuming 1-1 messaging
+    other_users(user).first
+  end
+
+
   def mark_as_read(participant)
     return unless participant
     receipts_for(participant).mark_as_read
