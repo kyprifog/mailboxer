@@ -199,6 +199,13 @@ class Mailboxer::Conversation < ActiveRecord::Base
 
   protected
 
+  def generate_token
+    self.token = loop do
+      random_token = SecureRandom.urlsafe_base64(nil, false)
+      break random_token unless self.class.exists?(token: random_token)
+    end
+  end
+
   #Use the default sanitize to clean the conversation subject
   def clean
     self.subject = sanitize subject
