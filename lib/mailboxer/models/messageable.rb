@@ -63,6 +63,7 @@ module Mailboxer
           :created_at => message_timestamp,
           :updated_at => message_timestamp
         }).build
+        convo.save #token before create is not getting the token in time for the mailer
 
         message = Mailboxer::MessageBuilder.new({
           :sender       => self,
