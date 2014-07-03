@@ -7,7 +7,6 @@ class Mailboxer::Message < Mailboxer::Notification
 
   belongs_to :conversation, :class_name => "Mailboxer::Conversation", :validate => true, :autosave => true
   validates_presence_of :sender
-  validate :no_email_in_body
 
   class_attribute :on_deliver_callback
   protected :on_deliver_callback
@@ -48,11 +47,5 @@ class Mailboxer::Message < Mailboxer::Notification
       on_deliver_callback.call(self) if on_deliver_callback
     end
     sender_receipt
-  end
-
-  private
-
-  def no_email_in_body
-    errors.add(:base, "Please dont send emails in the body of messages.  Once you contact this individual you can carry the conversation on over email using the Localstake replyto address.") if !(body =~ /([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})/i).blank?
   end
 end
